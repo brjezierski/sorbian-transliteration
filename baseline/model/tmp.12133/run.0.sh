@@ -1,0 +1,1 @@
+/home/bartek/mosesdecoder/scripts/../bin/score /home/bartek/sorbian-transliteration/baseline/model/tmp.12133/extract.0.gz /home/bartek/sorbian-transliteration/baseline/model/lex.f2e /home/bartek/sorbian-transliteration/baseline/model/tmp.12133/phrase-table.half.0000000.gz --KneserNey  2>> /dev/stderr 
