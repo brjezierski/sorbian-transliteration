@@ -12,7 +12,7 @@
 
 3. Run the transliteration training script 
 ```
-~/mosesdecoder/scripts/Transliteration/train-transliteration-module.pl --corpus-f ~/sorbian-transliteration/baseline/sample/corpus/clean.hsb --corpus-e ~/sorbian-transliteration/baseline/sample/corpus/clean.dsb --alignment ~/sorbian-transliteration/baseline/sample/model/aligned.grow-diag-final --moses-src-dir ~/mosesdecoder --external-bin-dir ~/sorbian-transliteration/baseline/external_bin --input-extension hsb --output-extension dsb --srilm-dir /usr/share/srilm --out-dir ~/sorbian-transliteration/baseline/sample/transliteration-model
+~/mosesdecoder/scripts/Transliteration/train-transliteration-module.pl --corpus-f ~/sorbian-transliteration/baseline/corpus/clean.hsb --corpus-e ~/sorbian-transliteration/baseline/corpus/clean.dsb --alignment ~/sorbian-transliteration/baseline/model/aligned.grow-diag-final --moses-src-dir ~/mosesdecoder --external-bin-dir ~/sorbian-transliteration/baseline/external_bin --input-extension hsb --output-extension dsb --srilm-dir /usr/share/srilm --out-dir ~/sorbian-transliteration/baseline/transliteration-model
 ```
 
 ## Issues
