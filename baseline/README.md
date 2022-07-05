@@ -7,12 +7,24 @@
 2. If model folder is not present, run the training script to build alignment
 
 ```
-~/mosesdecoder/scripts/training/train-model.perl -root-dir ~/sorbian-transliteration/baseline/ --corpus corpus/test_clean --f hsb --e dsb -external-bin-dir external_bin/ -mgiza --last-step=3
+~/mosesdecoder/scripts/training/train-model.perl -root-dir ~/sorbian-transliteration/baseline/ --corpus corpus/clean --f hsb --e dsb -external-bin-dir external_bin/ -mgiza --last-step=3
 ```
 
 3. Run the transliteration training script 
 ```
 ~/mosesdecoder/scripts/Transliteration/train-transliteration-module.pl --corpus-f ~/sorbian-transliteration/baseline/corpus/clean.hsb --corpus-e ~/sorbian-transliteration/baseline/corpus/clean.dsb --alignment ~/sorbian-transliteration/baseline/model/aligned.grow-diag-final --moses-src-dir ~/mosesdecoder --external-bin-dir ~/sorbian-transliteration/baseline/external_bin --input-extension hsb --output-extension dsb --srilm-dir /usr/share/srilm --out-dir ~/sorbian-transliteration/baseline/transliteration-model
+```
+
+## Steps to train the hi-en model
+
+1.
+```
+~/mosesdecoder/scripts/training/train-model.perl -root-dir ~/sorbian-transliteration/baseline/ --corpus corpus/clean --f hi --e en -external-bin-dir external_bin/ -mgiza --last-step=3
+```
+
+2.
+```
+ ~/mosesdecoder/scripts/Transliteration/train-transliteration-module.pl --corpus-f ~/sorbian-transliteration/baseline/corpus/clean.hi --corpus-e ~/sorbian-transliteration/baseline/corpus/clean.en --alignment ~/sorbian-transliteration/baseline/model/aligned.grow-diag-final --moses-src-dir ~/mosesdecoder --external-bin-dir ~/sorbian-transliteration/baseline/external_bin --input-extension hi --output-extension en --srilm-dir /usr/share/srilm --out-dir ~/sorbian-transliteration/baseline/transliteration-model
 ```
 
 ## Issues
