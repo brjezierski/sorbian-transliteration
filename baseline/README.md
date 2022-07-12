@@ -40,11 +40,11 @@
 4. Train moses with transliteration option on, GDFA symmetrization of GIZA++ alignments
     - a 5-gram OSM missing
   ```
-  nohup nice train-model.perl -root-dir ~/sorbian-transliteration/ -corpus corpus/clean \
+  nohup nice ~/mosesdecoder/scripts/training/train-model.perl -root-dir ~/sorbian-transliteration/ -corpus corpus/clean \
     -f hsb -e dsb -alignment grow-diag-final-and \
     -reordering msd-bidirectional-fe -lm 0:3:$HOME/sorbian-transliteration/baseline/lm/blm.dsb:8 \
-    -external-bin-dir ~/sorbian-transliteration/baseline/transliteration-model/model/phrase-table.gz -post-decoding-translit yes \
-    -transliteration-phrase-table <path to transliteration phrase table> >& training.out &
+    -external-bin-dir ~/sorbian-transliteration/baseline/external_bin -post-decoding-translit yes \
+    -transliteration-phrase-table ~/sorbian-transliteration/baseline/transliteration-model/model/phrase-table.gz >& training.out &
   ```
 
 ## Questions
