@@ -1,11 +1,17 @@
 # Baseline model
 
+## Setting up moses
+
+1. Install moses
+
+2. Comment out a line which removes English aka removeswords in the latin script in the clean script of transliteration module
+
 ## Data pre-processing
 
 1. ```cd``` into sorbian-transliteration/baseline
 
 2. Tokenization (whitespace insertion and punctuation deletion)
-    - * is train, val or test 
+    - * is train or test 
   ```
   ~/mosesdecoder/scripts/tokenizer/tokenizer.perl -l hsb < ~/sorbian-transliteration/data/corpus/*.hsb > ~/sorbian-transliteration/data/corpus/tokenized/*.hsb
   ~/mosesdecoder/scripts/tokenizer/tokenizer.perl -l dsb < ~/sorbian-transliteration/data/corpus/*.dsb > ~/sorbian-transliteration/data/corpus/tokenized/*.dsb
@@ -23,22 +29,28 @@
   ```
   ~/mosesdecoder/scripts/training/clean-corpus-n.perl ~/sorbian-transliteration/data/corpus/tokenized/lowercase/* hsb dsb ~/sorbian-transliteration/data/corpus/clean/* 1 80
   ```
+    We get 52744 sentences for train and 1453 for test set
 
-
-## Transliteration mining
+## Alignments and ransliteration mining
 
 1. ```cd``` into sorbian-transliteration/baseline
+
+  ```
+  mkdir external_bin
+  cp ~/mgiza/mgizapp/bin/* external_bin/
+  cp ~/mgiza/mgizapp/scripts/merge_alignment.py external_bin/
+  ```
 
 2. If model folder is not present, run the training script to build alignment
 
   ```
-  ~/mosesdecoder/scripts/training/train-model.perl -root-dir ~/sorbian-transliteration/baseline/ --corpus ~/sorbian-transliteration/data/corpus/clean/train --f hsb --e dsb -external-bin-dir ~/mosesdecoder/tools -mgiza --last-step=3
+  ~/mosesdecoder/scripts/training/train-model.perl -root-dir ~/sorbian-transliteration/baseline/ --corpus ~/sorbian-transliteration/data/corpus/clean/train --f hsb --e dsb -external-bin-dir ~/sorbian-transliteration/baseline/external_bin -mgiza --last-step=3
   ```
 
 3. Run the transliteration training script 
 
   ```
-  ~/mosesdecoder/scripts/Transliteration/train-transliteration-module.pl --corpus-f ~/sorbian-transliteration/data/corpus/clean/train.hsb --corpus-e ~/sorbian-transliteration/data/corpus/clean/train.dsb --alignment ~/sorbian-transliteration/baseline/model/aligned.grow-diag-final --moses-src-dir ~/mosesdecoder --external-bin-dir ~/mosesdecoder/tools --input-extension hsb --output-extension dsb --srilm-dir /usr/share/srilm --out-dir ~/sorbian-transliteration/baseline/transliteration-model
+  ~/mosesdecoder/scripts/Transliteration/train-transliteration-module.pl --corpus-f ~/sorbian-transliteration/data/corpus/clean/train.hsb --corpus-e ~/sorbian-transliteration/data/corpus/clean/train.dsb --alignment ~/sorbian-transliteration/baseline/model/aligned.grow-diag-final --moses-src-dir ~/mosesdecoder --external-bin-dir ~/mosesdecoder/tools --input-extension hsb --output-extension dsb --out-dir ~/sorbian-transliteration/baseline/transliteration-model
   ```
 
 
@@ -69,7 +81,9 @@
 4. Train moses with transliteration option on, GDFA symmetrization of GIZA++ alignments
     - a 5-gram OSM missing
   ```
-  nohup nice ~/mosesdecoder/scripts/training/train-model.perl -root-dir ~/sorbian-transliteration/baseline -corpus ~/sorbian-transliteration/data/corpus/clean/train \
+  nohup nice ~/mosesdecoder/scripts/training/train-model.perl \
+    -root-dir ~/sorbian-transliteration/baseline \
+    -corpus ~/sorbian-transliteration/data/corpus/clean/train \
     -f hsb -e dsb -alignment grow-diag-final-and \
     -reordering msd-bidirectional-fe -lm 0:3:$HOME/sorbian-transliteration/baseline/lm/blm.dsb:8 \
     -external-bin-dir ~/mosesdecoder/tools -post-decoding-translit yes \
@@ -79,19 +93,20 @@
 5. Generate a file with OOVs and translation output without transliteration
 
   ```
-  nohup nice ~/mosesdecoder/bin/moses -f  ~/mosesdecoder/sample-models/phrase-model/moses.ini \
+  nohup nice ~/mosesdecoder/bin/moses -f ~/sorbian-transliteration/baseline/model/moses.ini \
     -output-unknowns ~/sorbian-transliteration/baseline/oov.hsb \
-    < ~/sorbian-transliteration/data/corpus/clean/val.hsb > ~/sorbian-transliteration/data/corpus/clean/val.dsb 2> ~/sorbian-transliteration/baseline/val.translation.dsb
+    < ~/sorbian-transliteration/data/corpus/clean/test.hsb > ~/sorbian-transliteration/data/corpus/clean/test.dsb 2> ~/sorbian-transliteration/baseline/test.translation.dsb
   ```
 
 6. Transliterate the output
 
   ```
-  ./post-decoding-transliteration.pl --moses-src-dir ~/mosesdecoder \
-    --external-bin-dir ~/mosesdecoder/tools --transliteration-model-dir <transliteration model> \
+  ~/mosesdecoder/scripts/Transliteration/post-decoding-transliteration.pl --moses-src-dir ~/mosesdecoder \
+    --external-bin-dir ~/sorbian-transliteration/baseline/external_bin \
+    --transliteration-model-dir ~/sorbian-transliteration/baseline \
     --oov-file ~/sorbian-transliteration/baseline/oov.hsb \
-    --input-file ~/sorbian-transliteration/baseline/val.translation.dsb \
-    --output-file ~/sorbian-transliteration/baseline/val.translation-transliteration.dsb \
+    --input-file ~/sorbian-transliteration/baseline/test.translation.dsb \
+    --output-file ~/sorbian-transliteration/baseline/test.translation-transliteration.dsb \
     --input-extension hsb --output-extension dsb \
     --language-model $HOME/sorbian-transliteration/baseline/lm/blm.dsb \
     --decoder ~/mosesdecoder/bin/moses
