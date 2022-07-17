@@ -4,7 +4,10 @@
 
 1. Install moses
 
-2. Comment out a line which removes English aka removeswords in the latin script in the clean script of transliteration module
+2. Comment out a line which removes English which removes words in the latin script in the clean script of transliteration module
+
+3. install SLIRM 1.7.1
+
 
 ## Data pre-processing
 
@@ -44,13 +47,28 @@
 2. If model folder is not present, run the training script to build alignment
 
   ```
-  ~/mosesdecoder/scripts/training/train-model.perl -root-dir ~/sorbian-transliteration/baseline/ --corpus ~/sorbian-transliteration/data/corpus/clean/train --f hsb --e dsb -external-bin-dir ~/sorbian-transliteration/baseline/external_bin -mgiza --last-step=3
+  ~/mosesdecoder/scripts/training/train-model.perl \
+    -root-dir ~/sorbian-transliteration/baseline/ \
+    --corpus ~/sorbian-transliteration/data/corpus/clean/train \
+    --f hsb \
+    --e dsb \
+    -external-bin-dir ~/sorbian-transliteration/baseline/external_bin \
+    -mgiza --last-step=3
   ```
 
 3. Run the transliteration training script 
 
   ```
-  ~/mosesdecoder/scripts/Transliteration/train-transliteration-module.pl --corpus-f ~/sorbian-transliteration/data/corpus/clean/train.hsb --corpus-e ~/sorbian-transliteration/data/corpus/clean/train.dsb --alignment ~/sorbian-transliteration/baseline/model/aligned.grow-diag-final --moses-src-dir ~/mosesdecoder --external-bin-dir ~/mosesdecoder/tools --input-extension hsb --output-extension dsb --out-dir ~/sorbian-transliteration/baseline/transliteration-model
+  ~/mosesdecoder/scripts/Transliteration/train-transliteration-module.pl \
+    --corpus-f ~/sorbian-transliteration/data/corpus/clean/train.hsb \
+    --corpus-e ~/sorbian-transliteration/data/corpus/clean/train.dsb \
+    --alignment ~/sorbian-transliteration/baseline/model/aligned.grow-diag-final \
+    --moses-src-dir ~/mosesdecoder \
+    --external-bin-dir ~/sorbian-transliteration/baseline/external_bin \
+    --input-extension hsb \
+    --output-extension dsb \
+    --out-dir ~/sorbian-transliteration/baseline/transliteration-model \
+    --srilm-dir ~/srilm/bin/aarch64
   ```
 
 
@@ -67,7 +85,7 @@
     transliteration-file = /file containing list of words to be transliterated/
     ```
 
-2. Generate an interpolated Kneser-Ney smoothed 5-gram language model with KenLM for target language (dsb)
+2. [IGNORE] Generate an interpolated Kneser-Ney smoothed 5-gram language model with KenLM for target language (dsb)
   ```
   mkdir ~/lm
   cd ~/lm
@@ -85,8 +103,9 @@
     -root-dir ~/sorbian-transliteration/baseline \
     -corpus ~/sorbian-transliteration/data/corpus/clean/train \
     -f hsb -e dsb -alignment grow-diag-final-and \
-    -reordering msd-bidirectional-fe -lm 0:3:$HOME/sorbian-transliteration/baseline/lm/blm.dsb:8 \
-    -external-bin-dir ~/mosesdecoder/tools -post-decoding-translit yes \
+    -reordering msd-bidirectional-fe -lm 0:3:$HOME/sorbian-transliteration/baseline/transliteration-model/lm/targetLM:8 \
+    -external-bin-dir ~/sorbian-transliteration/baseline/external_bin \
+    -post-decoding-translit yes \
     -transliteration-phrase-table ~/sorbian-transliteration/baseline/transliteration-model/model/phrase-table.gz >& training.out &
   ```
 
@@ -95,24 +114,36 @@
   ```
   nohup nice ~/mosesdecoder/bin/moses -f ~/sorbian-transliteration/baseline/model/moses.ini \
     -output-unknowns ~/sorbian-transliteration/baseline/oov.hsb \
-    < ~/sorbian-transliteration/data/corpus/clean/test.hsb > ~/sorbian-transliteration/data/corpus/clean/test.dsb 2> ~/sorbian-transliteration/baseline/test.translation.dsb
+    < ~/sorbian-transliteration/data/corpus/clean/test.hsb > ~/sorbian-transliteration/data/corpus/clean/test.dsb 2> ~/sorbian-transliteration/baseline/test.translated.dsb
   ```
 
 6. Transliterate the output
 
   ```
-  ~/mosesdecoder/scripts/Transliteration/post-decoding-transliteration.pl --moses-src-dir ~/mosesdecoder \
+  ~/mosesdecoder/scripts/Transliteration/post-decoding-transliteration.pl \
+    --moses-src-dir ~/mosesdecoder \
     --external-bin-dir ~/sorbian-transliteration/baseline/external_bin \
-    --transliteration-model-dir ~/sorbian-transliteration/baseline \
+    --transliteration-model-dir ~/sorbian-transliteration/baseline/transliteration-model \
     --oov-file ~/sorbian-transliteration/baseline/oov.hsb \
-    --input-file ~/sorbian-transliteration/baseline/test.translation.dsb \
-    --output-file ~/sorbian-transliteration/baseline/test.translation-transliteration.dsb \
+    --input-file ~/sorbian-transliteration/baseline/results/test.translated.dsb \
+    --output-file ~/sorbian-transliteration/baseline/results/test.translated.transliterated.dsb \
     --input-extension hsb --output-extension dsb \
-    --language-model $HOME/sorbian-transliteration/baseline/lm/blm.dsb \
+    --language-model ~/sorbian-transliteration/baseline/transliteration-model/lm/targetLM \
     --decoder ~/mosesdecoder/bin/moses
   ```
 
+## Evaluation
 
+1. Score with BLEU
+
+  ```
+  ~/mosesdecoder/scripts/generic/multi-bleu.perl \
+    -lc ~/sorbian-transliteration/data/corpus/clean/test.dsb \
+    < ~/sorbian-transliteration/baseline/results/test.translated.dsb
+  ~/mosesdecoder/scripts/generic/multi-bleu.perl \
+    -lc ~/sorbian-transliteration/data/corpus/clean/test.dsb \
+    < ~/sorbian-transliteration/baseline/results/test.translated.transliterated.dsb
+  ```
 ## Questions
 We use 4 basic phrase-translation features (direct, inverse phrasetranslation, and lexical weighting features), language model feature (built from the target-side of mined transliteration corpus), and word and phrase penalties. The feature weights are tuned on a devset of 1000 transliteration pairs
 
