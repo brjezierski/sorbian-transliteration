@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+  <CHAPTER ID="007">
+    <P id="1">
+      <s id="1">Hlasování</s>
+    </P>
+    <SPEAKER ID="084" NAME="President">
+      <P id="2">
+        <s id="2">The next item is the vote.</s>
+      </P>
+      <P id="3">
+        <s id="3">(For the results and other details concerning the vote: see Minutes)</s>
+      </P>
+    </SPEAKER>
+  </CHAPTER>
+</document>
