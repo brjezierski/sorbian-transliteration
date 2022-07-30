@@ -5,8 +5,8 @@ Loading reference from /home/bartek/sorbian-transliteration/baseline/translitera
 .........Data::m_score_type BLEU
 Data::Scorer type from Scorer: BLEU
 loading nbest from run3.best100.out.gz
-Loaded N-best lists : [Wall 0.597358 CPU 0.597323] seconds.
+Loaded N-best lists : [Wall 0.459338 CPU 0.459346] seconds.
 Binary write mode is NOT selected
 saving the array into run3.features.dat
 saving the array into run3.scores.dat
-Stopping... : [Wall 1.07248 CPU 1.07234] seconds.
+Stopping... : [Wall 0.911947 CPU 0.911969] seconds.

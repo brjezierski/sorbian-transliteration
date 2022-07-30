@@ -12,7 +12,7 @@ loading score data from run2.scores.dat
 Loading Data from: run3.scores.dat and run3.features.dat
 loading feature data from run3.features.dat
 loading score data from run3.scores.dat
-Data loaded : [Wall 0.582594 CPU 0.582456] seconds.
+Data loaded : [Wall 0.47985 CPU 0.479832] seconds.
 Creating a pool of 16 threads
-Best point: 0.0742772 0.143127 0.0307108 0.00100975 0.438255 0.0468617 0.214116 -0.0516438  => 0.848353
-Stopping... : [Wall 15.2781 CPU 54.8234] seconds.
+Best point: 0.151354 0.190957 -0.0312187 -0.159044 0.17765 0.0536054 0.213648 -0.0225231  => 0.823193
+Stopping... : [Wall 9.18442 CPU 34.9433] seconds.

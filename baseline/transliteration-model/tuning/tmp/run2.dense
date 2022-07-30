@@ -1,8 +1,8 @@
-Distortion0= 0.0602051
-LM0= 0.20555
-WordPenalty0= 0.0951311
-PhrasePenalty0= 0.0587068
-TranslationModel0= 0.389241
-TranslationModel0= 0.0433215
-TranslationModel0= 0.100112
-TranslationModel0= -0.0477332
+Distortion0= 0.00566574
+LM0= 0.157883
+WordPenalty0= -0.18274
+PhrasePenalty0= 0.0201462
+TranslationModel0= 0.0653129
+TranslationModel0= 0.0109626
+TranslationModel0= 0.539551
+TranslationModel0= 0.0177382
