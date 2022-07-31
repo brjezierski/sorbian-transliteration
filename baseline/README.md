@@ -144,6 +144,43 @@
     -lc ~/sorbian-transliteration/data/corpus/clean/test.dsb \
     < ~/sorbian-transliteration/baseline/results/test.translated.transliterated.dsb
   ```
+  
+## Build a better LM and retrain
+
+0. Get data
+
+  ```
+  cp ~/sorbian-transliteration/data/hsb/lexicon.hsb ~/sorbian-transliteration/baseline/transliteration-model/lm_with_hsb-mono/target
+  ```
+
+1. Build the language model
+
+  ```
+  ~/srilm/bin/aarch64/ngram-count \
+    -order 5 -interpolate -kndiscount -addsmooth1 0.0 -unk \
+    -text ~/sorbian-transliteration/baseline/transliteration-model/lm_with_hsb-mono/target \
+    -lm ~/sorbian-transliteration/baseline/transliteration-model/lm_with_hsb-mono/targetLM
+  ~/mosesdecoder/bin/build_binary \
+    ~/sorbian-transliteration/baseline/transliteration-model/lm_with_hsb-mono/targetLM \
+    ~/sorbian-transliteration/baseline/transliteration-model/lm_with_hsb-mono/targetLM.bin
+  ```
+
+3. Retrain the transliteration model
+
+  ```
+  ~/mosesdecoder/scripts/training/train-model.perl \
+    -mgiza -mgiza-cpus 10 -dont-zip -first-step 9 \
+    -external-bin-dir ~/sorbian-transliteration/baseline/external_bin \
+    -f dsb \
+    -e hsb \
+    -alignment grow-diag-final-and -parts 5 \
+    -score-options '--KneserNey' \
+    -phrase-translation-table ~/sorbian-transliteration/baseline/transliteration-model/model/phrase-table \
+    -config ~/sorbian-transliteration/baseline/transliteration-model/model/moses.ini \
+    -lm 0:5:~/sorbian-transliteration/baseline/transliteration-model/lm_with_hsb-mono/targetLM.bin:8
+  ```
+
+
 ## Questions
 We use 4 basic phrase-translation features (direct, inverse phrasetranslation, and lexical weighting features), language model feature (built from the target-side of mined transliteration corpus), and word and phrase penalties. The feature weights are tuned on a devset of 1000 transliteration pairs
 
