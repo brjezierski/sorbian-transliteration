@@ -1,0 +1,12 @@
+Binary write mode is NOT selected
+Scorer type: BLEU
+name: case value: true
+Loading reference from /home/bartek/sorbian-transliteration/baseline-dsb-hsb/transliteration-model/tuning/reference
+.........Data::m_score_type BLEU
+Data::Scorer type from Scorer: BLEU
+loading nbest from run6.best100.out.gz
+Loaded N-best lists : [Wall 0.508125 CPU 0.508143] seconds.
+Binary write mode is NOT selected
+saving the array into run6.features.dat
+saving the array into run6.scores.dat
+Stopping... : [Wall 0.987845 CPU 0.987787] seconds.

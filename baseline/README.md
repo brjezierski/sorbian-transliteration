@@ -34,9 +34,9 @@
   ```
     We get 52744 sentences for train and 1453 for test set
 
-## Alignments and ransliteration mining
+## Alignments and transliteration mining
 
-1. ```cd``` into sorbian-transliteration/baseline
+1. Create external_bin directory
 
   ```
   mkdir external_bin
@@ -52,7 +52,7 @@
     --corpus ~/sorbian-transliteration/data/corpus/clean/train \
     --f hsb \
     --e dsb \
-    -external-bin-dir ~/sorbian-transliteration/baseline/external_bin \
+    -external-bin-dir ~/sorbian-transliteration/external_bin \
     -mgiza --last-step=3
   ```
 
@@ -101,7 +101,7 @@
   ```
   nohup nice ~/mosesdecoder/scripts/training/train-model.perl \
     -root-dir ~/sorbian-transliteration/baseline \
-    -corpus ~/sorbian-transliteration/data/corpus/clean/train \
+    -corpus ~/sorbian-transliteration/data/hsb-dsb/corpus/clean/train \
     -f hsb -e dsb -alignment grow-diag-final-and \
     -reordering msd-bidirectional-fe -lm 0:3:$HOME/sorbian-transliteration/baseline/transliteration-model/lm/targetLM:8 \
     -external-bin-dir ~/sorbian-transliteration/baseline/external_bin \
@@ -114,7 +114,7 @@
   ```
   nohup nice ~/mosesdecoder/bin/moses -f ~/sorbian-transliteration/baseline/model/moses.ini \
     -output-unknowns ~/sorbian-transliteration/baseline/oov.hsb \
-    < ~/sorbian-transliteration/data/corpus/clean/test.hsb > ~/sorbian-transliteration/data/corpus/clean/test.dsb 2> ~/sorbian-transliteration/baseline/test.translated.dsb
+    < ~/sorbian-transliteration/data/corpus/clean/test.hsb > ~/sorbian-transliteration/baseline/test.translated.dsb 2> trace.out
   ```
 
 6. Transliterate the output
@@ -137,12 +137,18 @@
 1. Score with BLEU
 
   ```
-  ~/mosesdecoder/scripts/generic/multi-bleu.perl \
-    -lc ~/sorbian-transliteration/data/corpus/clean/test.dsb \
-    < ~/sorbian-transliteration/baseline/results/test.translated.dsb
-  ~/mosesdecoder/scripts/generic/multi-bleu.perl \
-    -lc ~/sorbian-transliteration/data/corpus/clean/test.dsb \
-    < ~/sorbian-transliteration/baseline/results/test.translated.transliterated.dsb
+  ~/mosesdecoder/scripts/generic/multi-bleu-detok.perl \
+    -lc ~/sorbian-transliteration/data/hsb-dsb/corpus/clean/test.dsb \
+    < ~/sorbian-transliteration/baseline/results/test.translated.dsb;
+  ~/mosesdecoder/scripts/generic/multi-bleu-detok.perl \
+    -lc ~/sorbian-transliteration/data/hsb-dsb/corpus/clean/test.dsb \
+    < ~/sorbian-transliteration/baseline/results/test.translated.transliterated.dsb;
+  ~/mosesdecoder/scripts/generic/multi-bleu-detok.perl \
+    -lc ~/sorbian-transliteration/data/hsb-dsb/corpus/clean/test.hsb \
+    < ~/sorbian-transliteration/baseline/results/test.translated.hsb;
+  ~/mosesdecoder/scripts/generic/multi-bleu-detok.perl \
+    -lc ~/sorbian-transliteration/data/hsb-dsb/corpus/clean/test.hsb \
+    < ~/sorbian-transliteration/baseline/results/test.translated.transliterated.hsb
   ```
 ## Questions
 We use 4 basic phrase-translation features (direct, inverse phrasetranslation, and lexical weighting features), language model feature (built from the target-side of mined transliteration corpus), and word and phrase penalties. The feature weights are tuned on a devset of 1000 transliteration pairs
