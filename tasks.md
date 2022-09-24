@@ -12,5 +12,3 @@ phrase-table to the decoder on the fly where it
 can consider all features to select the best transliteration of OOV words.
 
 3. Evaluate the translations with and without substituting OOVs with mined transliterations
-
-4. Use Czech
